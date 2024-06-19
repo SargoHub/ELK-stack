@@ -1,0 +1,35 @@
+Pre-requisits -
+20 Gb storage
+2 Gb ram
+Java
+
+Created a EC2 ubuntu machine -
+sudo apt update
+
+Install Java -
+sudo apt install openjdk-11-jre-headless
+
+Install nginx - As it used as the web server for the Kibana
+sudo apt install nginx
+sudo systemctl enable nginx
+sudo systemctl enable nginx
+
+
+Install Elasticsearch - ( https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html ) Reference link
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-linux-x86_64.tar.gz
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-8.14.1-linux-x86_64.tar.gz.sha512 
+tar -xzf elasticsearch-8.14.1-linux-x86_64.tar.gz
+cd elasticsearch-8.14.1/ 
+
+
+Install Kibana - ( https://www.elastic.co/guide/en/kibana/current/targz.html ) - reference link
+curl -O https://artifacts.elastic.co/downloads/kibana/kibana-8.14.1-linux-x86_64.tar.gz
+curl https://artifacts.elastic.co/downloads/kibana/kibana-8.14.1-linux-x86_64.tar.gz.sha512 | shasum -a 512 -c - 
+tar -xzf kibana-8.14.1-linux-x86_64.tar.gz
+cd kibana-8.14.1/ 
+
+Install Logstash - ( https://www.elastic.co/guide/en/logstash/current/installing-logstash.html ) - reference link
+sudo apt-get install apt-transport-https
+
+
