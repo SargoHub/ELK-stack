@@ -44,6 +44,10 @@ cluster.name
 node.name
 network.host: localhost
 http.port: 9200
+for now kept all security checks false
+also commented the master node line
+and added
+discovery.type: single-node
 (ctrl+o press enter and ctrl+x) - to save and exit
 
 start elasticsearch -
