@@ -61,7 +61,7 @@ server.host: "localhost"
 (press ctrl+s and ctrl+x) to save and exit
 
 start kibana - 
-sudo systemtl start kibana
+sudo systemctl start kibana
 
 Configuring ht password for kibana to access it using the nginx -
 sudo apt-get install -y apache2-utils
