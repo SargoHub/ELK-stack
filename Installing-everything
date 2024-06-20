@@ -3,7 +3,7 @@ Pre-requisits -
 2 Gb ram
 Java
 
-Created a EC2 ubuntu machine -
+Created a EC2 ubuntu machine (t2.medium) -
 sudo apt update
 
 Install Java -
@@ -15,21 +15,88 @@ sudo systemctl enable nginx
 sudo systemctl enable nginx
 
 
-Install Elasticsearch - ( https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html ) Reference link
-wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-linux-x86_64.tar.gz
-wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-linux-x86_64.tar.gz.sha512
-shasum -a 512 -c elasticsearch-8.14.1-linux-x86_64.tar.gz.sha512 
-tar -xzf elasticsearch-8.14.1-linux-x86_64.tar.gz
-cd elasticsearch-8.14.1/ 
+Install Elasticsearch - ( https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html ) Reference link
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-amd64.deb
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.14.1-amd64.deb.sha512
+shasum -a 512 -c elasticsearch-8.14.1-amd64.deb.sha512 
+sudo dpkg -i elasticsearch-8.14.1-amd64.deb
 
 
-Install Kibana - ( https://www.elastic.co/guide/en/kibana/current/targz.html ) - reference link
-curl -O https://artifacts.elastic.co/downloads/kibana/kibana-8.14.1-linux-x86_64.tar.gz
-curl https://artifacts.elastic.co/downloads/kibana/kibana-8.14.1-linux-x86_64.tar.gz.sha512 | shasum -a 512 -c - 
-tar -xzf kibana-8.14.1-linux-x86_64.tar.gz
-cd kibana-8.14.1/ 
+Install Kibana - ( https://www.elastic.co/guide/en/kibana/current/deb.html ) - reference link
+wget https://artifacts.elastic.co/downloads/kibana/kibana-8.14.1-amd64.deb
+shasum -a 512 kibana-8.14.1-amd64.deb 
+sudo dpkg -i kibana-8.14.1-amd64.deb
 
 Install Logstash - ( https://www.elastic.co/guide/en/logstash/current/installing-logstash.html ) - reference link
 sudo apt-get install apt-transport-https
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-8.x.list
+sudo apt-get update && sudo apt-get install logstash
+
+Install Filebeat - ( https://www.elastic.co/guide/en/beats/filebeat/7.17/filebeat-installation-configuration.html ) - reference link
+curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.17.22-linux-x86_64.tar.gz
+tar xzvf filebeat-7.17.22-linux-x86_64.tar.gz
+
+Configuring Elasticsearch -
+sudo nano /home/ubuntu/elasticsearch-8.14.1/config/elasticsearch.yml
+uncomment - 
+cluster.name
+node.name
+network.host: localhost
+http.port: 9200
+(ctrl+o press enter and ctrl+x) - to save and exit
+
+start elasticsearch -
+sudo systemctl start elasticsearch
+
+Configring Kibana -
+sudo nano /etc/kibana/kibana.yml
+uncomment - 
+server.port: 5601
+server.host: "localhost"
+(press ctrl+s and ctrl+x) to save and exit
+
+start kibana - 
+sudo systemtl start kibana
+
+Configuring ht password for kibana to access it using the nginx -
+sudo apt-get install -y apache2-utils
+sudo htpasswd -c /etc/nginx/htpasswd.users kibadmin     ( created a new htpasswd file with the new username and password)
+sudo nano /etc/nginx/htpasswd.users
+
+Connecting the Nginx default page to kibana -
+sudo nano /etc/nginx/sites-available/default 
+add the code -
+server {
+    listen 80;
+
+    server_name 54.81.66.121;
+    
+    auth_basic "Restricted Access";
+    auth_basic_user_file /etc/nginx/htpasswd.users;
+
+    location / {
+        proxy_pass http://localhost:5601/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+    }
+
+}
+save and exit
+
+sudo systemctl reload nginx
+
+Finally, Hit the Public IP of the EC2. To get the kibana interface.
+
+
+
+
+
+
+
 
 
