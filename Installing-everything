@@ -50,6 +50,10 @@ and added
 discovery.type: single-node
 (ctrl+o press enter and ctrl+x) - to save and exit
 
+To check elasticsearch cluster health -
+curl -X GET "localhost:9200/_cluster/health?pretty"
+
+
 start elasticsearch -
 sudo systemctl start elasticsearch
 
